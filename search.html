@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- Bootstrap CDN -->
+<head>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/custom.css">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v2/stable/stitch.min.js"></script>
+
+  <script>
+    function getSearchResults() {
+      var searchTerm = document.getElementById('searchTerm').value;
+      const client = new stitch.StitchClient('fulltextdemo-pgogo');
+      client.login().then(() => client.executeFunction('SolrSearch', searchTerm)).then(docs => {
+                console.log("Found docs from service:", docs);
+                $("#resultsTable > tbody").html("");
+                data = [];
+                i = 0;
+                docs["response"]["docs"].forEach(function(doc) {
+                    data[i] = doc.question;
+                    $("#resultsTable > tbody").append("<tr><td><a href='javascript:ShowQuestion(data[" + i + "])'>" +  doc.title + "</a></td></tr>");
+                    i++;
+                });
+
+            }).catch(err => {
+                console.error(err);
+            });
+         }
+
+      function ShowQuestion(q)
+        {
+           $("#question").html(q);
+       }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="span4"></div>
+      <div class="span4"><a href="/"><img class="top-block" src="https://webassets.mongodb.com/_com_assets/cms/MongoDB-Logo-5c3a7405a85675366beb3a5ec4c032348c390b3f142f5e6dddf1d78e2df5cb5c.png" width="400 " height="120" alt="MongoDB" id="logo"></a></div>
+      <div class="span4"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+
+            <label for="searchTerm"></label>
+            <input id="searchTerm" name="searchTerm" type="text" class="input" />
+            <input value="Search" type="submit" class="btn btn-primary" label="JavaScript" onclick="getSearchResults();" />
+        </div>
+        <br><br>
+        <div id="searchResults">
+                <table id="resultsTable">
+
+                        <tbody id="tbody">
+
+                        </tbody>
+                    </table>
+        </div>
+        <hr>
+        <div id="question"></div>
+      </div>
+    </div>
+</body>
